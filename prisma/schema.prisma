@@ -21,27 +21,3 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
-model Invoice {
-  id         String        @id @default(cuid())
-  status     InvoiceStatus @default(Unpaid)
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-  Customer   Customer?     @relation(fields: [customerId], references: [id])
-  customerId String?
-}
-
-model Customer {
-  id        String    @id @default(cuid())
-  name      String
-  email     String
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  Invoice   Invoice[]
-}
-
-enum InvoiceStatus {
-  Paid
-  Unpaid
-  Overdue
-}
