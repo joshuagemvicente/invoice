@@ -23,7 +23,8 @@ export function SignupForm() {
     };
 
     if (response.error) {
-      setMessage(response.error);
+      // setMessage(response.error);
+      toast.error(response.error);
     } else {
       toast.success(response.success);
       // setMessage(response.success);
@@ -39,15 +40,15 @@ export function SignupForm() {
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <Label htmlFor="email">Email</Label>
-          <Input type="email" name="email" required />
+          <Input type="email" name="email" />
         </div>
         <div>
           <Label htmlFor="usernmae">Username</Label>
-          <Input type="text" name="username" required />
+          <Input type="text" name="username" />
         </div>
         <div>
           <Label htmlFor="password">Password</Label>
-          <Input type="password" name="password" required />
+          <Input type="password" name="password" />
         </div>
         <Button className="w-full" type="submit">
           {loading ? "Signing up..." : "Get Started"}

@@ -1,7 +1,8 @@
-export default function Signup() {
+import { SignInForm } from "@/components/signin-form";
+export default function Signin() {
   return (
-    <div>
-      <div>Sign in Page</div>
+    <div className="h-screen w-full flex justify-center items-center">
+      <SignInForm />
     </div>
   );
 }

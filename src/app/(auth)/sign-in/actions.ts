@@ -27,6 +27,12 @@ export async function signIn(formData: FormData) {
         username: uName,
       },
     });
+
+    if (!user) {
+      return { error: "Invalid username or password." };
+    }
+
+    cookies().set("token");
   } catch (error) {
     console.error(error);
   }

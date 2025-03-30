@@ -21,7 +21,7 @@ export default function AuthenticationLayout({
       <section className={`${inter.className}  antialiased`}>
         {children}
       </section>
-      <Toaster position="top-right" richColors />
+      <Toaster position="top-right" richColors closeButton />
     </main>
   );
 }

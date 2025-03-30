@@ -21,7 +21,8 @@ export async function signUp(formData: FormData) {
     });
 
     if (!parsedData.success) {
-      return { error: "Invalid input data." };
+      const errorMessages = parsedData.error.format();
+      return { errorMessages };
     }
 
     const {
@@ -40,7 +41,9 @@ export async function signUp(formData: FormData) {
     });
 
     if (existingUser) {
-      return { error: "User already exists." };
+      return {
+        error: { general: "User already exists with this email or username." },
+      };
     }
 
     const hashedPassword = await hashPassword(userPassword);
@@ -56,8 +59,6 @@ export async function signUp(formData: FormData) {
     return { success: "Signed up successfully!" };
   } catch (error) {
     console.error("Sign-up error:", error);
-
-    // ✅ Explicitly return an error response
-    return { error: "Internal server error." };
+    return { error: { general: "Internal server error." } };
   }
 }
