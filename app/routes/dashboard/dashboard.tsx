@@ -1,5 +1,4 @@
-import { Label } from "~/components/ui/label";
-import { Form } from "react-router";
+import { Form, redirect, type LoaderFunctionArgs } from "react-router";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -11,7 +10,18 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "~/components/ui/dialog";
-import { Input } from "~/components/ui/input";
+import { getSession } from "~/sessions.server";
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const session = await getSession(request);
+  const userId = session.get("userId");
+
+  if (!userId) {
+    return redirect("/login");
+  }
+
+  return { userId };
+}
 
 export default function Dashboard() {
   return (
