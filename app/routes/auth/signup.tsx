@@ -111,7 +111,7 @@ export default function Signup() {
           {/* Brand Section */}
           <div className="relative hidden md:flex flex-col justify-between bg-gradient-to-br from-primary/90 to-primary p-8 text-white">
             <div>
-              <div className="font-bold text-xl mb-2">ProductSphere</div>
+              <div className="font-bold text-xl mb-2">IMS</div>
               <h2 className="text-3xl font-bold mb-6">
                 Start your journey with us today
               </h2>
