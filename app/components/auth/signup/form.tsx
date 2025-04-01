@@ -6,53 +6,6 @@ import { prisma } from "~/lib/prisma";
 import { signupSchema } from "~/types/auth/signupSchema";
 import bcrypt from "bcryptjs";
 
-async function action({ request }: ActionFunctionArgs) {
-  const formData = await request.formData();
-  const username = formData.get("username");
-  const email = formData.get("email");
-  const password = formData.get("password");
-
-  const parse = signupSchema.safeParse({
-    username,
-    email,
-    password,
-  });
-
-  if (!parse.success) {
-    const errorMessages = parse.error.format();
-    return { errorMessages };
-  }
-
-  const {
-    username: uName,
-    email: userEmail,
-    password: userPassword,
-  } = parse.data;
-
-  const normalizedEmail = userEmail.toLowerCase();
-  const normalizedUsername = uName.toLowerCase();
-
-  const existingUser = await prisma.user.findFirst({
-    where: {
-      OR: [{ email: normalizedEmail }, { username: normalizedUsername }],
-    },
-  });
-
-  if (existingUser) {
-    return { error: "User already exists." };
-  }
-
-  const hashedPassword = await bcrypt.hash(userPassword, 10);
-
-  await prisma.user.create({
-    data: {
-      email: normalizedEmail,
-      username: normalizedUsername,
-      password: hashedPassword,
-    },
-  });
-}
-
 export function SignupForm() {
   return (
     <Form method="post">
