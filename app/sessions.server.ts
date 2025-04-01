@@ -1,4 +1,4 @@
-import { createCookieSessionStorage, redirect } from "react-router";
+import { createCookieSessionStorage } from "react-router";
 
 type SessionData = {
   userId: string;
@@ -8,7 +8,7 @@ type SessionFlashData = {
 };
 
 export const { commitSession, getSession, destroySession } =
-  createCookieSessionStorage({
+  createCookieSessionStorage<SessionData, SessionFlashData>({
     cookie: {
       name: "__session",
       httpOnly: true,
@@ -18,3 +18,5 @@ export const { commitSession, getSession, destroySession } =
       secure: process.env.NODE_ENV === "production",
     },
   });
+
+export async function logout() {}

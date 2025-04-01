@@ -3,7 +3,7 @@ import {
   Form,
   useActionData,
   type ActionFunctionArgs,
-  type LoaderFunctionArgs,
+  redirect,
 } from "react-router";
 import { Label } from "~/components/ui/label";
 import { Button } from "~/components/ui/button";
@@ -24,7 +24,6 @@ export async function action({ request }: ActionFunctionArgs) {
     email,
     password,
   });
-  console.log(parse);
 
   if (!parse.success) {
     const errorMessages = parse.error.format();
@@ -48,7 +47,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
   if (existingUser) {
     return {
-      error: "Try changing your username or email to proceed.",
+      info: "Try changing your username or email to proceed.",
     };
   }
 
@@ -62,6 +61,10 @@ export async function action({ request }: ActionFunctionArgs) {
     },
   });
 
+  setTimeout(() => {
+    redirect("login");
+  }, 2000);
+
   return { success: "User successfully created." };
 }
 
@@ -72,11 +75,14 @@ export default function Signup() {
     if (actionData) {
       if (actionData.error) {
         toast.error(actionData.error);
+      } else if (actionData.info) {
+        toast.info(actionData.info);
       } else if (actionData.success) {
         toast.success(actionData.success);
       }
     }
   }, [actionData]);
+
   return (
     <div
       className="flex justify-center items-center h-screen w-
