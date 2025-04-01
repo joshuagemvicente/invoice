@@ -4,6 +4,7 @@ import {
   useActionData,
   type ActionFunctionArgs,
   redirect,
+  data,
 } from "react-router";
 import { Label } from "~/components/ui/label";
 import { Button } from "~/components/ui/button";
@@ -46,9 +47,10 @@ export async function action({ request }: ActionFunctionArgs) {
   });
 
   if (existingUser) {
-    return {
-      info: "Try changing your username or email to proceed.",
-    };
+    return data(
+      { info: "Try changing your username or email to proceed." },
+      { status: 400 }
+    );
   }
 
   const hashedPassword = await bcrypt.hash(userPassword, 10);
@@ -65,7 +67,7 @@ export async function action({ request }: ActionFunctionArgs) {
     redirect("login");
   }, 2000);
 
-  return { success: "User successfully created." };
+  return data({ success: "Account successfully created" }, { status: 201 });
 }
 
 export default function Signup() {

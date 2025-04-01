@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import {
+  data,
   Form,
   redirect,
   useActionData,
@@ -35,13 +36,13 @@ export async function action({ request }: ActionFunctionArgs) {
   });
 
   if (!user) {
-    return { error: "Invalid username or password." };
+    return data({ error: "Invalid username or password." }, { status: 404 });
   }
 
   const isValidPassword = await bcrypt.compare(userPassword, user.password);
 
   if (!isValidPassword) {
-    return { error: "Invalid username or password." };
+    return data({ error: "Invalid username or password." }, { status: 404 });
   }
 
   const session = await getSession(request);
