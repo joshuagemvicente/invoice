@@ -14,7 +14,7 @@ import { prisma } from "~/lib/prisma";
 import { signupSchema } from "~/types/auth/signupSchema";
 import bcrypt from "bcryptjs";
 import { toast } from "sonner";
-
+import { Separator } from "~/components/ui/separator";
 import {
   CheckCircle2,
   User,
@@ -61,6 +61,13 @@ export async function action({ request }: ActionFunctionArgs) {
   if (existingUser) {
     return data(
       { info: "Try changing your username or email to proceed." },
+      { status: 400 }
+    );
+  }
+
+  if (userPassword.length < 8) {
+    return data(
+      { error: "Password must be at least 8 characters" },
       { status: 400 }
     );
   }
@@ -213,11 +220,11 @@ export default function Signup() {
               <div className="text-center text-sm">
                 <p className="text-muted-foreground">
                   By signing up, you agree to our{" "}
-                  <Link href="#" className="text-primary hover:underline">
+                  <Link to="#" className="text-primary hover:underline">
                     Terms of Service
                   </Link>{" "}
                   and{" "}
-                  <Link href="#" className="text-primary hover:underline">
+                  <Link to="#" className="text-primary hover:underline">
                     Privacy Policy
                   </Link>
                 </p>
