@@ -1,4 +1,9 @@
-import { Form, useActionData, type ActionFunctionArgs } from "react-router";
+import {
+  Form,
+  redirect,
+  useActionData,
+  type ActionFunctionArgs,
+} from "react-router";
 import { loginSchema } from "~/types/auth/loginSchema";
 import { prisma } from "~/lib/prisma";
 import bcrypt from "bcryptjs";
@@ -7,6 +12,7 @@ import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { toast } from "sonner";
 import { useEffect } from "react";
+import { getSession, sessionStorage } from "~/sessions.server";
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
@@ -32,11 +38,20 @@ export async function action({ request }: ActionFunctionArgs) {
     return { error: "Invalid username or password." };
   }
 
-  const isValidPassword = bcrypt.compare(userPassword, user.password);
+  const isValidPassword = await bcrypt.compare(userPassword, user.password);
 
   if (!isValidPassword) {
     return { error: "Invalid username or password." };
   }
+
+  const session = await getSession(request);
+  session.set("userId", user.id);
+
+  return redirect("/dashboard", {
+    headers: {
+      "Set-Cookie": await sessionStorage.commitSession(session),
+    },
+  });
 }
 
 export default function Login() {
