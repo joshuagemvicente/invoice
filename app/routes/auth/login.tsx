@@ -65,7 +65,7 @@ export default function Login() {
         toast.success;
       }
     }
-  });
+  }, [actionData]);
 
   return (
     <div className="h-screen w-full flex justify-center items-center">
