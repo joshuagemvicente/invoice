@@ -60,16 +60,16 @@ export default function Login() {
   useEffect(() => {
     if (actionData) {
       if (actionData.error) {
-        toast.error;
+        toast.error(actionData.error);
       } else if (actionData.success) {
-        toast.success;
+        toast.success(actionData.success);
       }
     }
   }, [actionData]);
 
   return (
     <div className="h-screen w-full flex justify-center items-center">
-      <Form method="post">
+      <Form method="POST">
         <div>
           <Label htmlFor="username">Username</Label>
           <Input type="text" name="username" />
