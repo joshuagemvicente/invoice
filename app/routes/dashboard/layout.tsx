@@ -5,6 +5,15 @@ import { DashboardSidebar } from "~/components/dashboard/app-sidebar";
 import { SidebarProvider, SidebarTrigger } from "~/components/ui/sidebar";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
+import {
+  Form,
+  redirect,
+  useLoaderData,
+  type LoaderFunctionArgs,
+} from "react-router";
+import { getSession, sessionStorage } from "~/sessions.server";
+import { prisma } from "~/lib/prisma";
+import type { User } from "@prisma/client";
 
 export function meta() {
   return [
@@ -12,10 +21,63 @@ export function meta() {
     { name: "description", content: "Welcome to React Router!" },
   ];
 }
+
+export type DashboardLoaderData = {
+  user: { username: string } | null;
+};
+
+async function getUserById(id: string): Promise<User | null> {
+  if (!id) return null;
+  try {
+    // Ensure you are querying by the correct field (id vs username)
+    const user = await prisma.user.findUnique({
+      where: { id: id }, // Assuming session stores the ID
+      // select: { username: true } // Good practice to select only needed fields
+    });
+    return user;
+  } catch (error) {
+    console.error("Failed to get user by ID:", error);
+    return null;
+  }
+}
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const session = await getSession(request);
+  const userId = session.get("userId");
+
+  if (!userId || typeof userId !== "string") {
+    // Throw redirects to properly handle them
+    throw redirect("/login");
+  }
+
+  const user = await getUserById(userId);
+
+  if (!user) {
+    console.warn(
+      `User ID ${userId} in session but not found in DB. Logging out.`
+    );
+    // Destroy session and redirect
+    return redirect("/login", {
+      headers: {
+        "Set-Cookie": await sessionStorage.destroySession(session),
+      },
+    });
+  }
+
+  const responseData: DashboardLoaderData = {
+    user: { username: user.username },
+  };
+
+  // Return a standard Response object
+  return responseData;
+};
+
 export default function DashboardLayout() {
+  const data = useLoaderData<typeof loader>(); // Use generic for type safety
+  const username = data?.user?.username;
   return (
     <SidebarProvider>
-      <DashboardSidebar />
+      <DashboardSidebar username={username} />
       <main className="w-full h-full">
         <div className="w-full p-3.5 flex justify-between items-center">
           <div>

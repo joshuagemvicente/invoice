@@ -1,4 +1,5 @@
 import { createCookieSessionStorage, redirect } from "react-router";
+import { prisma } from "./lib/prisma";
 
 type SessionData = {
   userId: string;
