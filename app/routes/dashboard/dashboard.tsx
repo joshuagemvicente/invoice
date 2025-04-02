@@ -25,7 +25,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export default function Dashboard() {
   return (
-    <div className="flex justify-center items-center w-full h-screen">
+    <div className="flex justify-center items-center">
       <div>Dashboard</div>
       <Dialog>
         <DialogTrigger asChild>
