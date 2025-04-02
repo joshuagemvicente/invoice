@@ -58,6 +58,17 @@ export async function action({ request }: ActionFunctionArgs) {
     },
   });
 
+  if (uName.length < 3) {
+    return data(
+      { error: "Username must be at least 3 characters." },
+      { status: 400 }
+    );
+  }
+
+  if (!userEmail.includes("@")) {
+    return data({ error: "Invalid email." }, { status: 400 });
+  }
+
   if (existingUser) {
     return data(
       { info: "Try changing your username or email to proceed." },
@@ -167,7 +178,6 @@ export default function Signup() {
                   <Input
                     id="email"
                     name="email"
-                    type="email"
                     placeholder="john@example.com"
                     className="pl-10"
                   />
