@@ -14,6 +14,7 @@ import {
 import { getSession, sessionStorage } from "~/sessions.server";
 import { prisma } from "~/lib/prisma";
 import type { User } from "@prisma/client";
+// import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar";
 
 export function meta() {
   return [
@@ -85,11 +86,12 @@ export default function DashboardLayout() {
           </div>
           <div className="flex gap-1.5 items-center">
             <Input type="text" placeholder="Search" />
-            <Button type="submit">Add Product</Button>
           </div>
         </div>
         <Separator />
-        <Outlet />
+        <div className="p-5">
+          <Outlet />
+        </div>
         <Toaster expand={false} position="top-right" richColors closeButton />
       </main>
     </SidebarProvider>
