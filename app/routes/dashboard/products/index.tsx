@@ -1,29 +1,14 @@
 import React, { useState } from "react";
 import {
-  BarChart3,
-  Box,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
-  ChevronUp,
-  ClipboardList,
   Download,
   Edit,
   Filter,
-  Home,
   MoreHorizontal,
-  Package,
-  Plus,
-  Search,
-  Settings,
-  ShoppingCart,
   Trash2,
-  Truck,
-  Users,
   LayoutGrid,
   LayoutList,
 } from "lucide-react";
-import type { LoaderFunctionArgs } from "react-router";
+import { Form, type LoaderFunctionArgs } from "react-router";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -31,21 +16,14 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
 } from "~/components/ui/card";
 
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 
@@ -61,6 +39,31 @@ import {
 } from "~/components/ui/table";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Badge } from "~/components/ui/badge";
+import {
+  DialogTrigger,
+  Dialog,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogContent,
+  DialogFooter,
+} from "~/components/ui/dialog";
+import { Label } from "~/components/ui/label";
+import { Input } from "~/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "~/components/ui/popover";
+import {
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from "cmdk";
+import { cn } from "~/lib/utils";
+import { AddProduct } from "~/components/dashboard/products/form";
 
 const products = [
   {
@@ -170,6 +173,21 @@ export default function DashboardProducts() {
               <CardDescription>Manage your product catalog.</CardDescription>
             </div>
             <div className="flex items-center gap-2">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button>Add Product</Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Add a Product</DialogTitle>
+                    <DialogDescription>
+                      Input a name, description, current stock, price, and
+                      status
+                    </DialogDescription>
+                  </DialogHeader>
+                  <AddProduct />
+                </DialogContent>
+              </Dialog>
               <Button variant="outline" className="h-8" size="sm">
                 <Filter />
                 Filter
@@ -179,12 +197,19 @@ export default function DashboardProducts() {
                 Export
               </Button>
               <div className="flex border  rounded-md">
-                <Button variant="ghost">
-                  {/* <Button variant="ghost" onClick={viewMode === "table" }> */}
+                <Button
+                  variant={viewMode === "table" ? "secondary" : "ghost"}
+                  onClick={() => setViewMode("table")}
+                >
+                  {/* <Button variant="ghost" onClick={viewMode === "table"}> */}
                   <LayoutGrid />
                 </Button>
-                <Button variant="ghost">
-                  {/* <Button variant="ghost" onClick={viewMode === "grid" }> */}
+                {/* <Button variant="ghost"> */}
+                <Button
+                  variant={viewMode === "grid" ? "secondary" : "ghost"}
+                  onClick={() => setViewMode("grid")}
+                >
+                  {/* <Button variant="ghost" onClick={viewMode === "grid"}> */}
                   <LayoutList />
                 </Button>
               </div>
