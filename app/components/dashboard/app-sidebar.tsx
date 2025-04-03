@@ -45,37 +45,37 @@ import { Separator } from "../ui/separator";
 const items = [
   {
     title: "Dashboard",
-    url: "dashboard",
+    url: "/dashboard",
     icon: Home,
   },
   {
     title: "Products",
-    url: "dashboard/products",
+    url: "/dashboard/products",
     icon: Package,
   },
   {
     title: "Categories",
-    url: "dashboard/categories",
+    url: "/dashboard/categories",
     icon: Boxes,
   },
   {
     title: "Suppliers",
-    url: "dashboard/suppliers",
+    url: "/dashboard/suppliers",
     icon: Container,
   },
   {
     title: "Reports",
-    url: "dashboard/reports",
+    url: "/dashboard/reports",
     icon: Sheet,
   },
   {
     title: "Settings",
-    url: "dashboard/settings",
+    url: "/dashboard/settings",
     icon: Settings,
   },
   {
     title: "Profile",
-    url: "dashboard/profile",
+    url: "/dashboard/profile",
     icon: User2,
   },
 ];
@@ -119,6 +119,7 @@ export function DashboardSidebar({ username }: DashboardSidebarProps) {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          <Separator />
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -148,7 +149,8 @@ export function DashboardSidebar({ username }: DashboardSidebarProps) {
                     <DialogHeader>
                       <DialogTitle>Are you sure?</DialogTitle>
                       <DialogDescription>
-                        You will need to relogin again.
+                        Are you sure you want to logout? You will need to sign
+                        in again.
                       </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
