@@ -8,7 +8,7 @@ import {
   LayoutGrid,
   LayoutList,
 } from "lucide-react";
-import { Form, type LoaderFunctionArgs } from "react-router";
+import { type LoaderFunctionArgs } from "react-router";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -46,23 +46,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogContent,
-  DialogFooter,
 } from "~/components/ui/dialog";
-import { Label } from "~/components/ui/label";
-import { Input } from "~/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "~/components/ui/popover";
-import {
-  CommandInput,
-  CommandList,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-} from "cmdk";
-import { cn } from "~/lib/utils";
 import { AddProduct } from "~/components/dashboard/products/form";
 
 const products = [
