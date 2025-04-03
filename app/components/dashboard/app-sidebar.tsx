@@ -162,7 +162,11 @@ export function DashboardSidebar({ username }: DashboardSidebarProps) {
                         Close
                       </Button>
                       <Form method="post" action="/logout">
-                        <Button type="submit" variant="destructive">
+                        <Button
+                          className="w-full"
+                          type="submit"
+                          variant="destructive"
+                        >
                           Logout
                         </Button>
                       </Form>
