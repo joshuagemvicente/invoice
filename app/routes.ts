@@ -15,6 +15,11 @@ export default [
   layout("./routes/dashboard/layout.tsx", [
     route("dashboard", "./routes/dashboard/dashboard.tsx"),
     route("dashboard/profile", "./routes/dashboard/profile.tsx"),
+    route("dashboard/categories", "./routes/dashboard/categories/index.tsx"),
+    route("dashboard/products", "./routes/dashboard/products/index.tsx"),
+    route("dashboard/suppliers", "./routes/dashboard/suppliers/index.tsx"),
+    route("dashboard/reports", "./routes/dashboard/reports/index.tsx"),
+    route("dashboard/settings", "./routes/dashboard/settings/index.tsx"),
     // route("dashboard/boards", "./routes/dashboard/boards.tsx"),
   ]),
 ] satisfies RouteConfig;
