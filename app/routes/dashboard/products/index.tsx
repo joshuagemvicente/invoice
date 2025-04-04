@@ -49,6 +49,10 @@ import {
 } from "~/components/ui/dialog";
 import { AddProduct } from "~/components/dashboard/products/form";
 
+// export type ProductsData = {
+//
+// }
+
 const products = [
   {
     id: 1,

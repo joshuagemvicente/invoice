@@ -8,6 +8,7 @@ import {
   Settings,
   ChevronUp,
   User2,
+  ClipboardList,
 } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
@@ -56,7 +57,7 @@ const items = [
   {
     title: "Categories",
     url: "/dashboard/categories",
-    icon: Boxes,
+    icon: ClipboardList,
   },
   {
     title: "Suppliers",
@@ -107,7 +108,7 @@ export function DashboardSidebar({ username }: DashboardSidebarProps) {
                   <SidebarMenuButton asChild>
                     <a href={item.url}>
                       <item.icon />
-                      <span>{item.title}</span>
+                      <span className="font-medium">{item.title}</span>
                     </a>
                   </SidebarMenuButton>
                   <Separator className="w-full" />

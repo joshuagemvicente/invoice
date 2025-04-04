@@ -68,15 +68,15 @@ export function AddProduct() {
                 {value
                   ? frameworks.find((framework) => framework.value === value)
                       ?.label
-                  : "Select framework..."}
+                  : "Select Category..."}
                 <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-[200px] p-0">
               <Command>
-                <CommandInput placeholder="Search framework..." />
+                <CommandInput placeholder="Search category..." />
                 <CommandList>
-                  <CommandEmpty>No framework found.</CommandEmpty>
+                  <CommandEmpty>No Category found.</CommandEmpty>
                   <CommandGroup>
                     {frameworks.map((framework) => (
                       <CommandItem
