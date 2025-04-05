@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import type { Route } from "./+types/products";
 import {
   Download,
   Edit,
@@ -8,7 +9,11 @@ import {
   LayoutGrid,
   LayoutList,
 } from "lucide-react";
-import { type LoaderFunctionArgs } from "react-router";
+import {
+  type ActionFunction,
+  type ActionFunctionArgs,
+  type LoaderFunctionArgs,
+} from "react-router";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -48,10 +53,6 @@ import {
   DialogContent,
 } from "~/components/ui/dialog";
 import { AddProduct } from "~/components/dashboard/products/form";
-
-// export type ProductsData = {
-//
-// }
 
 const products = [
   {
@@ -146,7 +147,14 @@ const products = [
   },
 ];
 
-export async function loader({ request }: LoaderFunctionArgs) {}
+export async function action({ request }: Route.ActionArgs) {
+  const formData = await request.formData();
+  const name = formData.get("name");
+  const description = formData.get("description");
+  const stock = formData.get("stock");
+  const price = formData.get("price");
+  const status = formData.get("status");
+}
 
 export default function DashboardProducts() {
   const [viewMode, setViewMode] = useState("table");

@@ -105,7 +105,25 @@ export function AddProduct() {
           </Popover>
         </div>
         <div className="space-y-1">
-          <Label htmlFor="description">Price</Label>
+          <Label htmlFor="price">Price</Label>
+          <Input
+            className="focus:outline-none  focus:ring-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            type="number"
+            name="price"
+            placeholder="0"
+          />
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="">Stock</Label>
+          <Input
+            className="focus:outline-none  focus:ring-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            type="number"
+            name="stock"
+            placeholder="5"
+          />
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="">Status</Label>
           <Input
             className="focus:outline-none  focus:ring-1 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             type="number"
