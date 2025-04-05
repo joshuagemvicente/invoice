@@ -7,7 +7,7 @@ import {
   useActionData,
   type ActionFunctionArgs,
 } from "react-router";
-import { loginSchema } from "~/types/auth/loginSchema";
+import { loginSchema } from "~/validations/auth/loginSchema";
 import { prisma } from "~/lib/prisma";
 import bcrypt from "bcryptjs";
 import { Label } from "~/components/ui/label";

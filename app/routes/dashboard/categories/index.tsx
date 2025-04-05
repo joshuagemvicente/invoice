@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useLoaderData, type LoaderFunctionArgs } from "react-router";
 import { prisma } from "~/lib/prisma";
 import {
@@ -16,6 +16,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuItem,
 } from "~/components/ui/dropdown-menu";
+import { formatCurrency } from "~/lib/currency";
 
 export type CategoryData = {
   totalCategories: number | null;
@@ -61,6 +62,7 @@ export default function DashboardCategories() {
     isActiveCount,
     isInactiveCount,
   } = useLoaderData() as CategoryData;
+
   return (
     <div className="p-5">
       <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
@@ -90,7 +92,7 @@ export default function DashboardCategories() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">
-              {totalProductPrice?.toFixed(2)}
+              {formatCurrency(totalProductPrice?.toFixed(2))}
             </div>
             <CardDescription>Combined value of all products</CardDescription>
           </CardContent>

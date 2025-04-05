@@ -54,9 +54,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const user = await getUserById(userId);
 
   if (!user) {
-    console.warn(
-      `User ID ${userId} in session but not found in DB. Logging out.`
-    );
     // Destroy session and redirect
     return redirect("/login", {
       headers: {
@@ -69,7 +66,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     user: { username: user.username },
   };
 
-  // Return a standard Response object
   return responseData;
 };
 

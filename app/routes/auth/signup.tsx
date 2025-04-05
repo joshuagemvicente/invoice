@@ -11,7 +11,7 @@ import { Label } from "~/components/ui/label";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { prisma } from "~/lib/prisma";
-import { signupSchema } from "~/types/auth/signupSchema";
+import { signupSchema } from "~/validations/auth/signupSchema";
 import bcrypt from "bcryptjs";
 import { toast } from "sonner";
 import { Separator } from "~/components/ui/separator";

@@ -19,6 +19,7 @@ model User {
   username   String     @unique
   email      String     @unique
   password   String
+  role       Roles?     @default(Admin)
   createdAt  DateTime   @default(now())
   updatedAt  DateTime   @updatedAt
   products   Product[]
@@ -68,4 +69,9 @@ enum Status {
   inStock
   lowStock
   outOfStock
+}
+
+enum Roles {
+  Admin
+  Cashier
 }
