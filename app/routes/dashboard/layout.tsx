@@ -14,7 +14,6 @@ import {
 import { getSession, sessionStorage } from "~/sessions.server";
 import { prisma } from "~/lib/prisma";
 import type { User } from "@prisma/client";
-// import { Avatar, AvatarImage, AvatarFallback } from "~/components/ui/avatar";
 
 export function meta() {
   return [
@@ -30,10 +29,8 @@ export type DashboardLoaderData = {
 async function getUserById(id: string): Promise<User | null> {
   if (!id) return null;
   try {
-    // Ensure you are querying by the correct field (id vs username)
     const user = await prisma.user.findUnique({
-      where: { id: id }, // Assuming session stores the ID
-      // select: { username: true } // Good practice to select only needed fields
+      where: { id: id },
     });
     return user;
   } catch (error) {
@@ -70,7 +67,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export default function DashboardLayout() {
-  const data = useLoaderData<typeof loader>(); // Use generic for type safety
+  const data = useLoaderData<typeof loader>();
   const username = data?.user?.username;
   return (
     <SidebarProvider>

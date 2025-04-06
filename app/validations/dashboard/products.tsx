@@ -6,7 +6,6 @@ export const createProductSchema = z.object({
   category: z.string(),
   price: z.number(),
   stock: z.number(),
-  status: z.string(),
 });
 
 export const updateProductSchema = z.object({
@@ -15,5 +14,4 @@ export const updateProductSchema = z.object({
   price: z.number(),
   category: z.string().optional(),
   stock: z.number(),
-  status: z.string().optional(),
 });

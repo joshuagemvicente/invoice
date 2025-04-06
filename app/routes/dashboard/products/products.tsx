@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import type { Route } from "./+types/products";
+import { useEffect, useState } from "react";
 import {
   Download,
   Edit,
@@ -10,9 +9,10 @@ import {
   LayoutList,
 } from "lucide-react";
 import {
-  type ActionFunction,
+  data,
+  useActionData,
+  useLoaderData,
   type ActionFunctionArgs,
-  type LoaderFunctionArgs,
 } from "react-router";
 import { Button } from "~/components/ui/button";
 import {
@@ -35,9 +35,7 @@ import {
 import {
   Table,
   TableBody,
-  TableCaption,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -53,111 +51,126 @@ import {
   DialogContent,
 } from "~/components/ui/dialog";
 import { AddProduct } from "~/components/dashboard/products/form";
+import { prisma } from "~/lib/prisma";
+import { createProductSchema } from "~/validations/dashboard/products";
+import { formatCurrency } from "~/lib/currency";
+import { toast } from "sonner";
 
-const products = [
-  {
-    id: 1,
-    name: "Wireless Headphones",
-    sku: "WH-100",
-    category: "Electronics",
-    price: 89.99,
-    stock: 45,
-    status: "In Stock",
-  },
-  {
-    id: 2,
-    name: "Office Chair",
-    sku: "OC-200",
-    category: "Furniture",
-    price: 199.99,
-    stock: 12,
-    status: "In Stock",
-  },
-  {
-    id: 3,
-    name: "Desk Lamp",
-    sku: "DL-150",
-    category: "Furniture",
-    price: 34.99,
-    stock: 8,
-    status: "Low Stock",
-  },
-  {
-    id: 4,
-    name: "Smartphone Case",
-    sku: "SC-300",
-    category: "Accessories",
-    price: 19.99,
-    stock: 67,
-    status: "In Stock",
-  },
-  {
-    id: 5,
-    name: "Bluetooth Speaker",
-    sku: "BS-250",
-    category: "Electronics",
-    price: 59.99,
-    stock: 23,
-    status: "In Stock",
-  },
-  {
-    id: 6,
-    name: "Mechanical Keyboard",
-    sku: "MK-400",
-    category: "Electronics",
-    price: 129.99,
-    stock: 5,
-    status: "Low Stock",
-  },
-  {
-    id: 7,
-    name: "Monitor Stand",
-    sku: "MS-350",
-    category: "Furniture",
-    price: 49.99,
-    stock: 0,
-    status: "Out of Stock",
-  },
-  {
-    id: 8,
-    name: "Wireless Mouse",
-    sku: "WM-500",
-    category: "Electronics",
-    price: 39.99,
-    stock: 31,
-    status: "In Stock",
-  },
-  {
-    id: 9,
-    name: "USB-C Cable",
-    sku: "UC-600",
-    category: "Accessories",
-    price: 14.99,
-    stock: 102,
-    status: "In Stock",
-  },
-  {
-    id: 10,
-    name: "External SSD",
-    sku: "ES-700",
-    category: "Electronics",
-    price: 149.99,
-    stock: 18,
-    status: "In Stock",
-  },
-];
+export async function loader() {
+  const categories = await prisma.category.findMany();
+  const products = await prisma.product.findMany({
+    take: 10,
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      stock: true,
+      price: true,
+      status: true,
+      Category: {
+        select: {
+          name: true,
+        },
+      },
+    },
+  });
 
-export async function action({ request }: Route.ActionArgs) {
+  return { products, categories };
+}
+
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   const name = formData.get("name");
   const description = formData.get("description");
-  const stock = formData.get("stock");
-  const price = formData.get("price");
-  const status = formData.get("status");
+  const stock = Number(formData.get("stock"));
+  const price = Number(formData.get("price"));
+  const category = formData.get("category");
+
+  let status: "inStock" | "lowStock" | "outOfStock";
+  if (stock <= 0) {
+    status = "outOfStock";
+  } else if (stock < 3) {
+    status = "lowStock";
+  } else {
+    status = "inStock";
+  }
+
+  const parse = createProductSchema.safeParse({
+    name,
+    description,
+    category,
+    price,
+    stock,
+  });
+
+  if (!parse.success) {
+    const errorMessages = parse.error.format();
+    return { errorMessages };
+  }
+
+  const {
+    name: pName,
+    description: pDescription,
+    stock: pStock,
+    price: pPrice,
+    category: pCategory,
+  } = parse.data;
+
+  if (!name || !description || !stock || !price || !category) {
+    return data({ error: "Fields are all required." });
+  }
+
+  const existingProduct = await prisma.product.findFirst({
+    where: {
+      name: pName,
+    },
+  });
+
+  if (existingProduct) {
+    return data({ error: "This product already exists." });
+  }
+
+  await prisma.product.create({
+    data: {
+      name: pName,
+      description: pDescription,
+      stock: pStock,
+      price: pPrice,
+      status,
+      Category: { connect: { id: pCategory } },
+    },
+  });
+
+  return data({ success: "Product has been created." });
 }
 
 export default function DashboardProducts() {
+  const { products, categories } = useLoaderData();
+  const actionData = useActionData();
   const [viewMode, setViewMode] = useState("table");
+
+  function getReadableStatus(status: string) {
+    switch (status) {
+      case "inStock":
+        return "In Stock";
+      case "lowStock":
+        return "Low Stock";
+      case "outOfStock":
+        return "Out of Stock";
+      default:
+        return status;
+    }
+  }
+
+  useEffect(() => {
+    if (actionData) {
+      if (actionData.error) {
+        toast.error(actionData.error);
+      } else {
+        toast.success(actionData.success);
+      }
+    }
+  }, [actionData]);
 
   return (
     <div>
@@ -181,7 +194,9 @@ export default function DashboardProducts() {
                       status
                     </DialogDescription>
                   </DialogHeader>
-                  <AddProduct />
+                  {/* Start of Component Add Form */}
+                  <AddProduct categories={categories} />
+                  {/* End of Component Add Form */}
                 </DialogContent>
               </Dialog>
               <Button variant="outline" className="h-8" size="sm">
@@ -225,10 +240,10 @@ export default function DashboardProducts() {
                       <TableHead className="cursor-pointer">
                         Product Name
                       </TableHead>
-                      <TableHead>SKU</TableHead>
+                      <TableHead>Description</TableHead>
                       <TableHead className="cursor-pointer">Category</TableHead>
                       <TableHead className="cursor-pointer text-right">
-                        Price
+                        Base Price
                       </TableHead>
                       <TableHead className="cursor-pointer text-right">
                         Stock
@@ -246,10 +261,10 @@ export default function DashboardProducts() {
                         <TableCell className="font-medium cursor-pointer hover:text-primary">
                           {product.name}
                         </TableCell>
-                        <TableCell>{product.sku}</TableCell>
-                        <TableCell>{product.category}</TableCell>
+                        <TableCell>{product.description}</TableCell>
+                        <TableCell>{product.Category?.name}</TableCell>
                         <TableCell className="text-right">
-                          ${product.price.toFixed(2)}
+                          {formatCurrency(product.price.toFixed(2))}
                         </TableCell>
                         <TableCell className="text-right">
                           {product.stock}
@@ -259,15 +274,15 @@ export default function DashboardProducts() {
                             variant="outline"
                             className={`
                                   ${
-                                    product.status === "In Stock"
+                                    product.status === "inStock"
                                       ? "bg-green-50 text-green-700 border-green-200"
-                                      : product.status === "Low Stock"
+                                      : product.status === "lowStock"
                                       ? "bg-amber-50 text-amber-700 border-amber-200"
                                       : "bg-red-50 text-red-700 border-red-200"
                                   }
                                 `}
                           >
-                            {product.status}
+                            {getReadableStatus(product.status)}
                           </Badge>
                         </TableCell>
                         <TableCell>
