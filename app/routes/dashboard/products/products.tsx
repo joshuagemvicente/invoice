@@ -9,11 +9,11 @@ import {
   LayoutList,
 } from "lucide-react";
 import {
-  data,
+  Form,
   useActionData,
   useLoaderData,
   type ActionFunctionArgs,
-} from "react-router";
+} from "react-router"; // Fixed import
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -22,7 +22,6 @@ import {
   CardTitle,
   CardDescription,
 } from "~/components/ui/card";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,7 +30,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-
 import {
   Table,
   TableBody,
@@ -49,6 +47,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogContent,
+  DialogFooter,
 } from "~/components/ui/dialog";
 import { AddProduct } from "~/components/dashboard/products/form";
 import { prisma } from "~/lib/prisma";
@@ -117,7 +116,7 @@ export async function action({ request }: ActionFunctionArgs) {
   } = parse.data;
 
   if (!name || !description || !stock || !price || !category) {
-    return data({ error: "Fields are all required." });
+    return { error: "Fields are all required." };
   }
 
   const existingProduct = await prisma.product.findFirst({
@@ -127,7 +126,7 @@ export async function action({ request }: ActionFunctionArgs) {
   });
 
   if (existingProduct) {
-    return data({ error: "This product already exists." });
+    return { error: "This product already exists." };
   }
 
   await prisma.product.create({
@@ -141,13 +140,17 @@ export async function action({ request }: ActionFunctionArgs) {
     },
   });
 
-  return data({ success: "Product has been created." });
+  return { success: "Product has been created." };
 }
 
 export default function DashboardProducts() {
   const { products, categories } = useLoaderData();
   const actionData = useActionData();
   const [viewMode, setViewMode] = useState("table");
+  const [dialogDeleteOpen, setDialogDeleteOpen] = useState(false);
+  const [selectedProductId, setSelectedProductId] = useState<string | null>(
+    null
+  );
 
   function getReadableStatus(status: string) {
     switch (status) {
@@ -172,6 +175,11 @@ export default function DashboardProducts() {
     }
   }, [actionData]);
 
+  const handleDeleteProduct = (productId: string) => {
+    setSelectedProductId(productId);
+    setDialogDeleteOpen(true);
+  };
+
   return (
     <div>
       <Card>
@@ -183,7 +191,7 @@ export default function DashboardProducts() {
             </div>
             <div className="flex items-center gap-2">
               <Dialog>
-                <DialogTrigger asChild>
+                <DialogTrigger>
                   <Button>Add Product</Button>
                 </DialogTrigger>
                 <DialogContent>
@@ -194,9 +202,7 @@ export default function DashboardProducts() {
                       status
                     </DialogDescription>
                   </DialogHeader>
-                  {/* Start of Component Add Form */}
                   <AddProduct categories={categories} />
-                  {/* End of Component Add Form */}
                 </DialogContent>
               </Dialog>
               <Button variant="outline" className="h-8" size="sm">
@@ -207,20 +213,17 @@ export default function DashboardProducts() {
                 <Download />
                 Export
               </Button>
-              <div className="flex border  rounded-md">
+              <div className="flex border rounded-md">
                 <Button
                   variant={viewMode === "table" ? "secondary" : "ghost"}
                   onClick={() => setViewMode("table")}
                 >
-                  {/* <Button variant="ghost" onClick={viewMode === "table"}> */}
                   <LayoutGrid />
                 </Button>
-                {/* <Button variant="ghost"> */}
                 <Button
                   variant={viewMode === "grid" ? "secondary" : "ghost"}
                   onClick={() => setViewMode("grid")}
                 >
-                  {/* <Button variant="ghost" onClick={viewMode === "grid"}> */}
                   <LayoutList />
                 </Button>
               </div>
@@ -229,104 +232,128 @@ export default function DashboardProducts() {
         </CardHeader>
         <CardContent>
           {viewMode === "table" ? (
-            <>
-              <div>
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-12">
-                        <Checkbox />
-                      </TableHead>
-                      <TableHead className="cursor-pointer">
-                        Product Name
-                      </TableHead>
-                      <TableHead>Description</TableHead>
-                      <TableHead className="cursor-pointer">Category</TableHead>
-                      <TableHead className="cursor-pointer text-right">
-                        Base Price
-                      </TableHead>
-                      <TableHead className="cursor-pointer text-right">
-                        Stock
-                      </TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="w-12">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {products.map((product) => (
-                      <TableRow key={product.id}>
-                        <TableCell>
-                          <Checkbox />
-                        </TableCell>
-                        <TableCell className="font-medium cursor-pointer hover:text-primary">
-                          {product.name}
-                        </TableCell>
-                        <TableCell>{product.description}</TableCell>
-                        <TableCell>{product.Category?.name}</TableCell>
-                        <TableCell className="text-right">
-                          {formatCurrency(product.price.toFixed(2))}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          {product.stock}
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant="outline"
-                            className={`
-                                  ${
-                                    product.status === "inStock"
-                                      ? "bg-green-50 text-green-700 border-green-200"
-                                      : product.status === "lowStock"
-                                      ? "bg-amber-50 text-amber-700 border-amber-200"
-                                      : "bg-red-50 text-red-700 border-red-200"
-                                  }
-                                `}
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-12">
+                    <Checkbox />
+                  </TableHead>
+                  <TableHead className="cursor-pointer">Product Name</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead className="cursor-pointer">Category</TableHead>
+                  <TableHead className="cursor-pointer text-right">
+                    Base Price
+                  </TableHead>
+                  <TableHead className="cursor-pointer text-right">
+                    Stock
+                  </TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="w-12">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {products.map((product) => (
+                  <TableRow key={product.id}>
+                    <TableCell>
+                      <Checkbox />
+                    </TableCell>
+                    <TableCell className="font-medium cursor-pointer hover:text-primary">
+                      {product.name}
+                    </TableCell>
+                    <TableCell>{product.description}</TableCell>
+                    <TableCell>{product.Category?.name}</TableCell>
+                    <TableCell className="text-right">
+                      {formatCurrency(product.price.toFixed(2))}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {product.stock}
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="outline"
+                        className={`
+                          ${
+                            product.status === "inStock"
+                              ? "bg-green-50 text-green-700 border-green-200"
+                              : product.status === "lowStock"
+                              ? "bg-amber-50 text-amber-700 border-amber-200"
+                              : "bg-red-50 text-red-700 border-red-200"
+                          }
+                        `}
+                      >
+                        {getReadableStatus(product.status)}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
                           >
-                            {getReadableStatus(product.status)}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8"
-                              >
-                                <MoreHorizontal className="h-4 w-4" />
-                                <span className="sr-only">Actions</span>
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                              <DropdownMenuItem>View Details</DropdownMenuItem>
-                              <DropdownMenuItem>
-                                <Edit className="h-4 w-4 mr-2" />
-                                Edit Product
-                              </DropdownMenuItem>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem className="text-red-600">
-                                <Trash2 className="h-4 w-4 mr-2" />
-                                Delete Product
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-            </>
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Actions</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem>View Details</DropdownMenuItem>
+                          <DropdownMenuItem>
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit Product
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <div
+                            onClick={() => handleDeleteProduct(product.id)}
+                            className="flex items-center cursor-pointer text-[14px] text-red-600 px-2 py-1 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete Product
+                          </div>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           ) : (
             <div>Grid</div>
           )}
         </CardContent>
-        {/* <CardContent></CardContent> */}
-        {/* viewMode === table use table component */}
-        {/* viewMode === grid use grid layout */}
       </Card>
-      <div>Products</div>
+
+      <Dialog open={dialogDeleteOpen} onOpenChange={setDialogDeleteOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you sure?</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this product? You will need to
+              create it again.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              className="cursor-pointer"
+              variant="outline"
+              onClick={() => setDialogDeleteOpen(false)}
+            >
+              Close
+            </Button>
+            {selectedProductId && (
+              <Form
+                method="delete"
+                action={`/deleteProduct/${selectedProductId}`}
+              >
+                <Button className="w-full" type="submit" variant="destructive">
+                  Delete
+                </Button>
+              </Form>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

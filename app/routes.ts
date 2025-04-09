@@ -20,7 +20,6 @@ export default [
     route("dashboard/suppliers", "./routes/dashboard/suppliers/index.tsx"),
     route("dashboard/reports", "./routes/dashboard/reports/index.tsx"),
     route("dashboard/settings", "./routes/dashboard/settings/index.tsx"),
-    route("deleteProduct", "./routes/dashboard/products/deleteProduct.tsx"),
-    // route("dashboard/boards", "./routes/dashboard/boards.tsx"),
+    route("deleteProduct/:id", "./routes/dashboard/products/deleteProduct.tsx"),
   ]),
 ] satisfies RouteConfig;
